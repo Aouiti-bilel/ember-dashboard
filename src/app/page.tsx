@@ -1,9 +1,17 @@
+import { DashboardShell } from "@/components/layout/dashboard-shell";
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-2xl font-semibold">
-        Ember Dashboard
-      </h1>
-    </main>
+    <DashboardShell>
+      <div>
+        <h1 className="text-2xl font-semibold">
+          Dashboard
+        </h1>
+
+        <p className="text-muted-foreground">
+          Today¨s patient flow, occupancy, and revenue at a glance.
+        </p>
+      </div>
+    </DashboardShell>
   );
 }
