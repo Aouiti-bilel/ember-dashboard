@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ColorThemeProvider } from "@/components/color-theme-provider";
+import { DashboardPreferencesProvider } from "@/components/dashboard-preferences-provider";
 
 export const metadata: Metadata = {
   title: "Ember Dashboard",
@@ -22,7 +23,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ColorThemeProvider>
-            {children}
+            <DashboardPreferencesProvider>
+              {children}
+            </DashboardPreferencesProvider>
           </ColorThemeProvider>
         </ThemeProvider>
       </body>
