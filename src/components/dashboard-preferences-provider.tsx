@@ -24,29 +24,17 @@ export const containers = [
   "boxed",
 ] as const
 
-export const directions = [
-  "ltr",
-  "rtl",
-] as const
 
-export const languages = [
-  "en",
-  "de",
-  "fr",
-] as const
+
 
 export type Density = (typeof densities)[number]
 export type Layout = (typeof layouts)[number]
 export type Container = (typeof containers)[number]
-export type Direction = (typeof directions)[number]
-export type Language = (typeof languages)[number]
 
 type DashboardPreferences = {
   density: Density
   layout: Layout
   container: Container
-  direction: Direction
-  language: Language
 }
 
 type DashboardPreferencesContextValue =
@@ -54,8 +42,6 @@ type DashboardPreferencesContextValue =
     setDensity: (value: Density) => void
     setLayout: (value: Layout) => void
     setContainer: (value: Container) => void
-    setDirection: (value: Direction) => void
-    setLanguage: (value: Language) => void
     resetPreferences: () => void
   }
 
@@ -65,8 +51,6 @@ const defaultPreferences: DashboardPreferences = {
   density: "compact",
   layout: "sidebar",
   container: "fluid",
-  direction: "ltr",
-  language: "en",
 }
 
 const DashboardPreferencesContext =
@@ -108,13 +92,6 @@ function getStoredPreferences(): DashboardPreferences {
         ? parsed.container
         : defaultPreferences.container,
 
-      direction: isValidValue(directions, parsed.direction)
-        ? parsed.direction
-        : defaultPreferences.direction,
-
-      language: isValidValue(languages, parsed.language)
-        ? parsed.language
-        : defaultPreferences.language,
     }
   } catch {
     return defaultPreferences
@@ -131,7 +108,6 @@ export function DashboardPreferencesProvider({
 
   useEffect(() => {
     const stored = getStoredPreferences()
-
     setPreferences(stored)
   }, [])
 
@@ -142,8 +118,6 @@ export function DashboardPreferencesProvider({
     root.dataset.layout = preferences.layout
     root.dataset.container = preferences.container
 
-    root.dir = preferences.direction
-    root.lang = preferences.language
 
     localStorage.setItem(
       STORAGE_KEY,
@@ -172,19 +146,8 @@ export function DashboardPreferencesProvider({
     }))
   }
 
-  function setDirection(direction: Direction) {
-    setPreferences((current) => ({
-      ...current,
-      direction,
-    }))
-  }
 
-  function setLanguage(language: Language) {
-    setPreferences((current) => ({
-      ...current,
-      language,
-    }))
-  }
+
 
   function resetPreferences() {
     setPreferences(defaultPreferences)
@@ -197,8 +160,6 @@ export function DashboardPreferencesProvider({
         setDensity,
         setLayout,
         setContainer,
-        setDirection,
-        setLanguage,
         resetPreferences,
       }}
     >

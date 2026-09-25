@@ -7,10 +7,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 import { Customizer } from "@/components/customizer/customizer";
-
+import { useTranslations } from "next-intl"
 export function Navbar() {
   const [customizerOpen, setCustomizerOpen] = useState(false);
-
+  const t = useTranslations("Navigation")
   return (
     <>
       <header className="flex h-16 items-center border-b bg-background px-4 md:px-6">

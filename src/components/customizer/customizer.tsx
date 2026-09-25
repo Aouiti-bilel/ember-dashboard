@@ -1,27 +1,24 @@
 "use client"
 
 import {
+    AlignLeft,
+    AlignRight,
     Check,
-    Globe,
     LayoutDashboard,
-    Menu,
+    Minimize2,
     Moon,
     Palette,
     PanelLeft,
     PanelTop,
     RotateCcw,
     Rows3,
+    Scan,
     Settings,
-    SlidersHorizontal,
     Sun,
     SunMoon,
-    TextCursorInput,
-    AlignLeft,
-    AlignRight,
-    Minimize2,
-    Scan,
 } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -41,173 +38,134 @@ import {
     useDashboardPreferences,
     type Container,
     type Density,
-    type Direction,
-    type Language,
     type Layout,
 } from "@/components/dashboard-preferences-provider"
 
+import { LanguageSwitcher } from "./language-switcher"
 type CustomizerProps = {
     open: boolean
     onOpenChange: (open: boolean) => void
 }
 
-const colorThemes: {
-    name: string
-    value: ColorTheme
-    className: string
-}[] = [
-        {
-            name: "Coral",
-            value: "coral",
-            className: "bg-orange-500",
-        },
-        {
-            name: "Teal",
-            value: "teal",
-            className: "bg-teal-500",
-        },
-        {
-            name: "Blue",
-            value: "blue",
-            className: "bg-blue-500",
-        },
-        {
-            name: "Violet",
-            value: "violet",
-            className: "bg-violet-500",
-        },
-        {
-            name: "Green",
-            value: "green",
-            className: "bg-green-500",
-        },
-        {
-            name: "Orange",
-            value: "orange",
-            className: "bg-orange-600",
-        },
-    ]
-
-const appearanceOptions = [
-    {
-        name: "Light",
-        value: "light",
-        icon: Sun,
-    },
-    {
-        name: "Dark",
-        value: "dark",
-        icon: Moon,
-    },
-    {
-        name: "System",
-        value: "system",
-        icon: SunMoon,
-    },
-] as const
-
-const densityOptions: {
-    name: string
-    value: Density
-    icon: typeof Rows3
-}[] = [
-        {
-            name: "Compact",
-            value: "compact",
-            icon: Rows3,
-        },
-        {
-            name: "Comfortable",
-            value: "comfortable",
-            icon: Rows3,
-        },
-        {
-            name: "Spacious",
-            value: "spacious",
-            icon: Rows3,
-        },
-    ]
-
-const layoutOptions: {
-    name: string
-    value: Layout
-    icon: typeof PanelLeft
-}[] = [
-        {
-            name: "Sidebar",
-            value: "sidebar",
-            icon: PanelLeft,
-        },
-        {
-            name: "Top Nav",
-            value: "topnav",
-            icon: PanelTop,
-        },
-    ]
-
-const containerOptions: {
-    name: string
-    value: Container
-    icon: typeof LayoutDashboard
-}[] = [
-        {
-            name: "Fluid",
-            value: "fluid",
-            icon: Scan,
-        },
-        {
-            name: "Boxed",
-            value: "boxed",
-            icon: Minimize2,
-        },
-    ]
-
-const directionOptions: {
-    name: string
-    value: Direction
-    icon: typeof AlignLeft
-}[] = [
-        {
-            name: "LTR",
-            value: "ltr",
-            icon: AlignLeft,
-        },
-        {
-            name: "RTL",
-            value: "rtl",
-            icon: AlignRight,
-        },
-    ]
-
-const languageOptions: {
-    name: string
-    value: Language
-    icon: typeof Globe
-}[] = [
-        {
-            name: "English",
-            value: "en",
-            icon: Globe,
-        },
-        {
-            name: "Deutsch",
-            value: "de",
-            icon: Globe,
-        },
-        {
-            name: "Français",
-            value: "fr",
-            icon: Globe,
-        },
-    ]
-
-
 export function Customizer({
     open,
     onOpenChange,
 }: CustomizerProps) {
-    const { theme, setTheme } = useTheme()
+    const t = useTranslations("Customizer")
 
+    const colorThemes: {
+        name: string
+        value: ColorTheme
+        className: string
+    }[] = [
+            {
+                name: t("coral"),
+                value: "coral",
+                className: "bg-orange-500",
+            },
+            {
+                name: t("teal"),
+                value: "teal",
+                className: "bg-teal-500",
+            },
+            {
+                name: t("blue"),
+                value: "blue",
+                className: "bg-blue-500",
+            },
+            {
+                name: t("violet"),
+                value: "violet",
+                className: "bg-violet-500",
+            },
+            {
+                name: t("green"),
+                value: "green",
+                className: "bg-green-500",
+            },
+            {
+                name: t("orange"),
+                value: "orange",
+                className: "bg-orange-600",
+            },
+        ]
+
+    const appearanceOptions = [
+        {
+            name: t("light"),
+            value: "light",
+            icon: Sun,
+        },
+        {
+            name: t("dark"),
+            value: "dark",
+            icon: Moon,
+        },
+        {
+            name: t("system"),
+            value: "system",
+            icon: SunMoon,
+        },
+    ] as const
+
+    const densityOptions: {
+        name: string
+        value: Density
+        icon: typeof Rows3
+    }[] = [
+            {
+                name: t("compact"),
+                value: "compact",
+                icon: Rows3,
+            },
+            {
+                name: t("comfortable"),
+                value: "comfortable",
+                icon: Rows3,
+            },
+            {
+                name: t("spacious"),
+                value: "spacious",
+                icon: Rows3,
+            },
+        ]
+
+    const layoutOptions: {
+        name: string
+        value: Layout
+        icon: typeof PanelLeft
+    }[] = [
+            {
+                name: t("sidebar"),
+                value: "sidebar",
+                icon: PanelLeft,
+            },
+            {
+                name: t("topNav"),
+                value: "topnav",
+                icon: PanelTop,
+            },
+        ]
+
+    const containerOptions: {
+        name: string
+        value: Container
+        icon: typeof LayoutDashboard
+    }[] = [
+            {
+                name: t("fluid"),
+                value: "fluid",
+                icon: Scan,
+            },
+            {
+                name: t("boxed"),
+                value: "boxed",
+                icon: Minimize2,
+            },
+        ]
+
+
+    const { theme, setTheme } = useTheme()
     const { colorTheme, setColorTheme } = useColorTheme()
 
     const {
@@ -217,12 +175,10 @@ export function Customizer({
         setLayout,
         container,
         setContainer,
-        direction,
-        setDirection,
-        language,
-        setLanguage,
         resetPreferences,
     } = useDashboardPreferences()
+
+
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
@@ -233,30 +189,23 @@ export function Customizer({
                 <SheetHeader className="border-b pb-6">
                     <SheetTitle className="flex items-center gap-2">
                         <Settings className="size-5" />
-                        Customizer
+                        {t("title")}
                     </SheetTitle>
 
-                    <SheetDescription>
-                        Customize the appearance of your dashboard.
+                    <SheetDescription className="font-semibold">
+                        {t("description")}
                     </SheetDescription>
                 </SheetHeader>
 
                 <div className="flex-1 overflow-y-auto px-6 py-6">
                     <div className="space-y-8">
 
-                        {/* Appearance */}
-                        <section className="space-y-4">
-                            <div>
-                                <h3 className="flex items-center gap-2 text-sm font-semibold">
-                                    <Sun className="size-4" />
-                                    Appearance
-                                </h3>
-
-                                <p className="mt-1 text-sm text-muted-foreground">
-                                    Choose your preferred color mode.
-                                </p>
-                            </div>
-
+                        {/* Theme */}
+                        <CustomizerSection
+                            title={t("theme")}
+                            description={t("themeDescription")}
+                            icon={<Sun className="size-4" />}
+                        >
                             <div className="grid grid-cols-3 gap-2">
                                 {appearanceOptions.map((option) => {
                                     const Icon = option.icon
@@ -271,28 +220,22 @@ export function Customizer({
                                             onClick={() => setTheme(option.value)}
                                         >
                                             <Icon className="size-5" />
-                                            <span className="text-xs">
+
+                                            <span className="text-xs font-semibold">
                                                 {option.name}
                                             </span>
                                         </Button>
                                     )
                                 })}
                             </div>
-                        </section>
+                        </CustomizerSection>
 
                         {/* Color */}
-                        <section className="space-y-4">
-                            <div>
-                                <h3 className="flex items-center gap-2 text-sm font-semibold">
-                                    <Palette className="size-4" />
-                                    Color
-                                </h3>
-
-                                <p className="mt-1 text-sm text-muted-foreground">
-                                    Choose the primary color for your dashboard.
-                                </p>
-                            </div>
-
+                        <CustomizerSection
+                            title={t("color")}
+                            description={t("colorDescription")}
+                            icon={<Palette className="size-4" />}
+                        >
                             <div className="grid grid-cols-3 gap-3">
                                 {colorThemes.map((color) => {
                                     const active = colorTheme === color.value
@@ -303,7 +246,7 @@ export function Customizer({
                                             type="button"
                                             onClick={() => setColorTheme(color.value)}
                                             className="group flex flex-col items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-accent"
-                                            aria-label={`Select ${color.name} theme`}
+                                            aria-label={`${t("selectColorTheme")} ${color.name}`}
                                             aria-pressed={active}
                                         >
                                             <span
@@ -314,17 +257,20 @@ export function Customizer({
                                                 )}
                                             </span>
 
-                                            <span className="text-xs font-medium">
+                                            <span className="text-xs font-semibold">
                                                 {color.name}
                                             </span>
                                         </button>
                                     )
                                 })}
                             </div>
-                        </section>
+                        </CustomizerSection>
 
                         {/* Density */}
-                        <CustomizerSection title="Density">
+                        <CustomizerSection
+                            title={t("density")}
+                            description={t("densityDescription")}
+                        >
                             <div className="grid grid-cols-3 gap-2">
                                 {densityOptions.map((option) => (
                                     <PreferenceButton
@@ -339,7 +285,10 @@ export function Customizer({
                         </CustomizerSection>
 
                         {/* Layout */}
-                        <CustomizerSection title="Layout">
+                        <CustomizerSection
+                            title={t("layout")}
+                            description={t("layoutDescription")}
+                        >
                             <div className="grid grid-cols-2 gap-2">
                                 {layoutOptions.map((option) => (
                                     <PreferenceButton
@@ -354,7 +303,10 @@ export function Customizer({
                         </CustomizerSection>
 
                         {/* Container */}
-                        <CustomizerSection title="Container">
+                        <CustomizerSection
+                            title={t("container")}
+                            description={t("containerDescription")}
+                        >
                             <div className="grid grid-cols-2 gap-2">
                                 {containerOptions.map((option) => (
                                     <PreferenceButton
@@ -368,33 +320,13 @@ export function Customizer({
                             </div>
                         </CustomizerSection>
 
-                        {/* Direction */}
-                        <CustomizerSection title="Direction">
-                            <div className="grid grid-cols-2 gap-2">
-                                {directionOptions.map((option) => (
-                                    <PreferenceButton
-                                        key={option.value}
-                                        label={option.name}
-                                        icon={option.icon}
-                                        active={direction === option.value}
-                                        onClick={() => setDirection(option.value)}
-                                    />
-                                ))}
-                            </div>
-                        </CustomizerSection>
-
                         {/* Language */}
-                        <CustomizerSection title="Language">
-                            <div className="grid grid-cols-3 gap-2">
-                                {languageOptions.map((option) => (
-                                    <PreferenceButton
-                                        key={option.value}
-                                        label={option.name}
-                                        icon={option.icon}
-                                        active={language === option.value}
-                                        onClick={() => setLanguage(option.value)}
-                                    />
-                                ))}
+                        <CustomizerSection
+                            title={t("language")}
+                            description={t("languageDescription")}
+                        >
+                            <div className="grid grid-cols-2 gap-2">
+                                <LanguageSwitcher />
                             </div>
                         </CustomizerSection>
 
@@ -402,11 +334,11 @@ export function Customizer({
                         <Button
                             type="button"
                             variant="outline"
-                            className="w-full"
+                            className="w-full font-semibold"
                             onClick={resetPreferences}
                         >
                             <RotateCcw className="size-4" />
-                            Reset to Defaults
+                            {t("reset")}
                         </Button>
                     </div>
                 </div>
@@ -417,14 +349,28 @@ export function Customizer({
 
 function CustomizerSection({
     title,
+    description,
+    icon,
     children,
 }: {
     title: string
+    description: string
+    icon?: React.ReactNode
     children: React.ReactNode
 }) {
     return (
-        <section className="space-y-3">
-            <h3 className="text-sm font-medium">{title}</h3>
+        <section className="space-y-4">
+            <div>
+                <h3 className="flex items-center gap-2 text-sm font-semibold">
+                    {icon}
+                    {title}
+                </h3>
+
+                <p className="mt-1 text-sm font-semibold text-muted-foreground">
+                    {description}
+                </p>
+            </div>
+
             {children}
         </section>
     )
@@ -455,7 +401,7 @@ function PreferenceButton({
         >
             <Icon className="size-5" />
 
-            <span className="text-xs font-medium">
+            <span className="text-xs font-semibold">
                 {label}
             </span>
 

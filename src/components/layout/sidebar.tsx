@@ -13,32 +13,31 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useTranslations } from "next-intl"
 
-const navigation = [
-  {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    active: true,
-  },
-  {
-    title: "Patients",
-    icon: Users,
-  },
-  {
-    title: "Appointments",
-    icon: CalendarDays,
-  },
-  {
-    title: "Medical Records",
-    icon: FileText,
-  },
-  {
-    title: "Prescriptions",
-    icon: ClipboardList,
-  },
-];
 
 export function Sidebar() {
+  const t = useTranslations("Navigation")
+  const navigation = [
+    {
+      title: t("dashboard"),
+      icon: LayoutDashboard,
+      active: true,
+    },
+    {
+      title: t("patients"),
+      icon: Users,
+    },
+    {
+      title: t("appointments"),
+      icon: CalendarDays,
+    },
+
+    {
+      title: t("prescriptions"),
+      icon: ClipboardList,
+    },
+  ];
   return (
     <aside className="flex h-screen w-64 flex-col border-r bg-background">
       {/* Logo */}
