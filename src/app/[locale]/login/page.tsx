@@ -1,7 +1,7 @@
 "use client"
 
 import { ArrowRight, Eye, EyeOff, Globe2, LockKeyhole, Mail, ShieldCheck } from "lucide-react"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { usePathname, useRouter } from "@/i18n/navigation"
-
+import { authClient } from "@/lib/auth-client"
 type Locale = "en" | "fr" | "ar"
 
 const languages: { value: Locale; label: string }[] = [
@@ -58,7 +58,12 @@ function EmberLogo({ light = false }: { light?: boolean }) {
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
-
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [rememberMe, setRememberMe] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
+  const t = useTranslations("Login")
   const locale = useLocale() as Locale
   const pathname = usePathname()
   const router = useRouter()
@@ -69,7 +74,26 @@ export default function LoginPage() {
   function handleLanguageChange(nextLocale: Locale) {
     router.replace(pathname, { locale: nextLocale })
   }
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
 
+    setError("")
+    setIsLoading(true)
+
+    const { error } = await authClient.signIn.email({
+      email,
+      password,
+      rememberMe,
+    })
+
+    if (error) {
+      setError(error.message || "Unable to sign in.")
+      setIsLoading(false)
+      return
+    }
+
+    window.location.href = "/en"
+  }
   return (
     <main className="min-h-screen bg-white">
       <div className="grid min-h-screen lg:grid-cols-2">
@@ -89,53 +113,48 @@ export default function LoginPage() {
 
             <div className="mt-24 max-w-xl">
               <h1 className="text-5xl font-semibold leading-[1.08] tracking-tight text-slate-950 xl:text-6xl">
-                Better care
+                {t("brandTagline")}
                 <br />
-                <span className="text-teal-600">starts here.</span>
+                <span className="text-teal-600"> {t("heroTitleAccent")} </span>
               </h1>
 
               <p className="mt-7 max-w-md text-base leading-7 text-slate-600">
-                Ember helps healthcare professionals manage their patients,
-                appointments and clinical workflow — all in one place.
+                {t("heroDescription")}
               </p>
 
               <div className="mt-10 space-y-6">
                 <Feature
                   icon="patient"
-                  title="Manage patients"
-                  description="Keep your patient records organized."
+                  title={t("features.patients.title")}
+                  description={t("features.patients.description")}
                 />
                 <Feature
                   icon="calendar"
-                  title="Schedule appointments"
-                  description="Save time, reduce no-shows."
+                  title={t("features.appointments.title")}
+                  description={t("features.appointments.description")}
                 />
                 <Feature
                   icon="shield"
-                  title="Better outcomes"
-                  description="More focus on what matters."
+                  title={t("features.outcomes.title")}
+                  description={t("features.outcomes.description")}
                 />
               </div>
             </div>
 
             <div className="mt-auto max-w-[220px] pb-2 text-3xl font-light italic leading-tight text-white drop-shadow-md">
-              Health
-              <br />
-              for a brighter
-              <br />
-              tomorrow
+              {t("healthMessage")}
             </div>
           </div>
         </section>
 
         <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-6 py-12 sm:px-10 lg:px-16">
           <div className="absolute right-8 top-7 flex items-center gap-2 text-xs text-slate-500">
-            <span>Need help?</span>
+            <span>{t("help.question")}</span>
             <button
               type="button"
               className="font-medium text-teal-600 transition-colors hover:text-teal-700 hover:underline"
             >
-              Contact your administrator
+              {t("help.contact")}
             </button>
             <ArrowRight className="size-3.5 text-teal-600" />
           </div>
@@ -150,18 +169,18 @@ export default function LoginPage() {
 
             <div className="mb-8">
               <h2 className="text-4xl font-semibold tracking-tight text-slate-950">
-                Welcome back
+                {t("welcome.title")}
               </h2>
               <p className="mt-3 text-base text-slate-500">
-                Sign in to your account to continue
+                {t("welcome.description")}
               </p>
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_14px_45px_-28px_rgba(15,23,42,0.28)] sm:p-8">
-              <form className="space-y-5">
+              <form className="space-y-5" onSubmit={handleSubmit}>
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm text-slate-700">
-                    Email
+                    {t("form.email")}
                   </Label>
                   <div className="relative">
                     <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
@@ -169,6 +188,8 @@ export default function LoginPage() {
                       id="email"
                       name="email"
                       type="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
                       autoComplete="email"
                       placeholder="doctor@example.com"
                       className="h-12 border-slate-200 pl-10 shadow-none focus-visible:ring-teal-500/25"
@@ -180,13 +201,13 @@ export default function LoginPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password" className="text-sm text-slate-700">
-                      Password
+                      {t("form.password")}
                     </Label>
                     <button
                       type="button"
                       className="text-xs font-medium text-teal-600 hover:text-teal-700 hover:underline"
                     >
-                      Forgot password?
+                      {t("form.forgotPassword")}
                     </button>
                   </div>
 
@@ -196,6 +217,8 @@ export default function LoginPage() {
                       id="password"
                       name="password"
                       type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
                       autoComplete="current-password"
                       placeholder="Enter your password"
                       className="h-12 border-slate-200 pl-10 pr-11 shadow-none focus-visible:ring-teal-500/25"
@@ -217,22 +240,29 @@ export default function LoginPage() {
                     id="remember"
                     name="remember"
                     type="checkbox"
+                    checked={rememberMe}
+                    onChange={(event) => setRememberMe(event.target.checked)}
                     className="size-4 rounded border-slate-300 accent-teal-600"
                   />
                   <Label
                     htmlFor="remember"
                     className="cursor-pointer text-sm font-normal text-slate-500"
                   >
-                    Remember me
+                    {t("form.rememberMe")}
                   </Label>
                 </div>
-
+                {error && (
+                  <p className="text-sm text-destructive" role="alert">
+                    {error}
+                  </p>
+                )}
                 <Button
                   type="submit"
+                  disabled={isLoading}
                   className="h-12 w-full rounded-lg bg-teal-600 text-white shadow-none hover:bg-teal-700"
                 >
-                  Sign in
-                  <ArrowRight className="size-4" />
+                  {isLoading ? "Signing in..." : "Sign in"}
+                  {!isLoading && <ArrowRight className="size-4" />}
                 </Button>
               </form>
             </div>
@@ -241,10 +271,10 @@ export default function LoginPage() {
               <ShieldCheck className="mt-0.5 size-5 shrink-0 text-teal-600" />
               <div>
                 <p className="text-sm font-medium text-slate-700">
-                  Private practice workspace
+                  {t("security.title")}
                 </p>
                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                  Secure access to your cabinet account.
+                  {t("security.description")}
                 </p>
               </div>
             </div>

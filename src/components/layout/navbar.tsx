@@ -1,16 +1,24 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Bell, Menu, Settings } from "lucide-react";
-
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-
-import { Customizer } from "@/components/customizer/customizer";
+import { useState } from "react"
+import { Bell, LogOut, Menu, Settings } from "lucide-react"
 import { useTranslations } from "next-intl"
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+
+import { Customizer } from "@/components/customizer/customizer"
+import { authClient } from "@/lib/auth-client"
+
 export function Navbar() {
-  const [customizerOpen, setCustomizerOpen] = useState(false);
+  const [customizerOpen, setCustomizerOpen] = useState(false)
   const t = useTranslations("Navigation")
+
+  async function handleSignOut() {
+    await authClient.signOut()
+    window.location.href = "/en/login"
+  }
+
   return (
     <>
       <header className="flex h-16 items-center border-b bg-background px-4 md:px-6">
@@ -21,6 +29,7 @@ export function Navbar() {
           className="md:hidden"
         >
           <Menu className="size-5" />
+
           <span className="sr-only">
             Open navigation
           </span>
@@ -56,6 +65,18 @@ export function Navbar() {
               BL
             </AvatarFallback>
           </Avatar>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSignOut}
+          >
+            <LogOut className="size-4" />
+
+            <span className="sr-only">
+              Sign out
+            </span>
+          </Button>
         </div>
       </header>
 
@@ -64,5 +85,5 @@ export function Navbar() {
         onOpenChange={setCustomizerOpen}
       />
     </>
-  );
+  )
 }

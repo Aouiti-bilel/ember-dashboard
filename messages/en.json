@@ -47,5 +47,61 @@
     "violet": "Violet",
     "green": "Green",
     "orange": "Orange"
+  },
+  "Login": {
+    "brandTagline": "Healthcare, simplified.",
+    "heroTitle": "Better care",
+    "heroTitleAccent": "starts here.",
+    "heroDescription": "Ember helps healthcare professionals manage their patients, appointments and clinical workflow — all in one place.",
+    "features": {
+      "patients": {
+        "title": "Manage patients",
+        "description": "Keep your patient records organized."
+      },
+      "appointments": {
+        "title": "Schedule appointments",
+        "description": "Save time, reduce no-shows."
+      },
+      "outcomes": {
+        "title": "Better outcomes",
+        "description": "More focus on what matters."
+      }
+    },
+    "healthMessage": "Health for a brighter tomorrow",
+    "help": {
+      "question": "Need help?",
+      "contact": "Contact your administrator"
+    },
+    "welcome": {
+      "title": "Welcome back",
+      "description": "Sign in to your account to continue"
+    },
+    "form": {
+      "email": "Email",
+      "emailPlaceholder": "doctor@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot password?",
+      "rememberMe": "Remember me",
+      "signIn": "Sign in",
+      "signingIn": "Signing in..."
+    },
+    "security": {
+      "title": "Private practice workspace",
+      "description": "Secure access to your cabinet account."
+    },
+    "language": {
+      "choose": "Choose language",
+      "english": "English",
+      "french": "Français",
+      "arabic": "العربية"
+    },
+    "errors": {
+      "unableToSignIn": "Unable to sign in."
+    },
+    "accessibility": {
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    }
   }
 }

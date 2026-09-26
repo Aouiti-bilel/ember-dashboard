@@ -47,5 +47,61 @@
     "violet": "Violet",
     "green": "Vert",
     "orange": "Orange"
+  },
+  "Login": {
+    "brandTagline": "Les soins de santé, en toute simplicité.",
+    "heroTitle": "De meilleurs soins",
+    "heroTitleAccent": "commencent ici.",
+    "heroDescription": "Ember aide les professionnels de santé à gérer leurs patients, leurs rendez-vous et leur flux de travail clinique — le tout au même endroit.",
+    "features": {
+      "patients": {
+        "title": "Gérer les patients",
+        "description": "Gardez les dossiers de vos patients bien organisés."
+      },
+      "appointments": {
+        "title": "Planifier les rendez-vous",
+        "description": "Gagnez du temps et réduisez les absences."
+      },
+      "outcomes": {
+        "title": "De meilleurs résultats",
+        "description": "Concentrez-vous davantage sur l’essentiel."
+      }
+    },
+    "healthMessage": "Pour une santé meilleure, pour un avenir plus lumineux",
+    "help": {
+      "question": "Besoin d’aide ?",
+      "contact": "Contactez l’administrateur"
+    },
+    "welcome": {
+      "title": "Bon retour",
+      "description": "Connectez-vous à votre compte pour continuer"
+    },
+    "form": {
+      "email": "Adresse e-mail",
+      "emailPlaceholder": "doctor@example.com",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Entrez votre mot de passe",
+      "forgotPassword": "Mot de passe oublié ?",
+      "rememberMe": "Se souvenir de moi",
+      "signIn": "Se connecter",
+      "signingIn": "Connexion..."
+    },
+    "security": {
+      "title": "Espace de travail pour cabinet privé",
+      "description": "Accès sécurisé à votre compte de cabinet."
+    },
+    "language": {
+      "choose": "Choisir la langue",
+      "english": "English",
+      "french": "Français",
+      "arabic": "العربية"
+    },
+    "errors": {
+      "unableToSignIn": "Impossible de se connecter."
+    },
+    "accessibility": {
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe"
+    }
   }
 }

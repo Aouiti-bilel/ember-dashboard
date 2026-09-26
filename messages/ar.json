@@ -47,5 +47,61 @@
     "violet": "بنفسجي",
     "green": "أخضر",
     "orange": "برتقالي"
+  },
+  "Login": {
+    "brandTagline": "الرعاية الصحية، ببساطة.",
+    "heroTitle": "رعاية أفضل",
+    "heroTitleAccent": "تبدأ من هنا.",
+    "heroDescription": "يساعد Ember المتخصصين في الرعاية الصحية على إدارة المرضى والمواعيد وسير العمل السريري — كل ذلك في مكان واحد.",
+    "features": {
+      "patients": {
+        "title": "إدارة المرضى",
+        "description": "حافظ على تنظيم سجلات مرضاك."
+      },
+      "appointments": {
+        "title": "جدولة المواعيد",
+        "description": "وفّر الوقت وقلّل من حالات عدم الحضور."
+      },
+      "outcomes": {
+        "title": "نتائج أفضل",
+        "description": "ركّز أكثر على ما يهم."
+      }
+    },
+    "healthMessage": "صحة أفضل لغدٍ أكثر إشراقًا",
+    "help": {
+      "question": "هل تحتاج إلى مساعدة؟",
+      "contact": "تواصل مع المسؤول"
+    },
+    "welcome": {
+      "title": "مرحبًا بعودتك",
+      "description": "سجّل الدخول إلى حسابك للمتابعة"
+    },
+    "form": {
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "doctor@example.com",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "forgotPassword": "هل نسيت كلمة المرور؟",
+      "rememberMe": "تذكرني",
+      "signIn": "تسجيل الدخول",
+      "signingIn": "جارٍ تسجيل الدخول..."
+    },
+    "security": {
+      "title": "مساحة عمل للعيادة الخاصة",
+      "description": "وصول آمن إلى حساب عيادتك."
+    },
+    "language": {
+      "choose": "اختر اللغة",
+      "english": "English",
+      "french": "Français",
+      "arabic": "العربية"
+    },
+    "errors": {
+      "unableToSignIn": "تعذر تسجيل الدخول."
+    },
+    "accessibility": {
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور"
+    }
   }
 }
