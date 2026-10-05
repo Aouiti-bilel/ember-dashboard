@@ -40,7 +40,9 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import Link from 'next/link'
 
+import { EditPatientSheet } from "./edit-patient-sheet"
 export type Patient = {
     id: string
     fullName: string
@@ -50,50 +52,36 @@ export type Patient = {
     isActive: boolean
 }
 
-const patients: Patient[] = [
-    {
-        id: "1",
-        fullName: "Sami Ben Ali",
-        phone: "+216 20 123 456",
-        email: "sami@example.com",
-        birthDate: "1988-04-12",
-        isActive: true,
-    },
-    {
-        id: "2",
-        fullName: "Nour Haddad",
-        phone: "+216 22 456 789",
-        email: "nour@example.com",
-        birthDate: "1994-09-21",
-        isActive: true,
-    },
-    {
-        id: "3",
-        fullName: "Ahmed Trabelsi",
-        phone: "+216 55 234 678",
-        email: "ahmed@example.com",
-        birthDate: "1976-01-08",
-        isActive: true,
-    },
-    {
-        id: "4",
-        fullName: "Meriem Gharbi",
-        phone: "+216 98 765 432",
-        birthDate: "1991-06-17",
-        isActive: false,
-    },
-    {
-        id: "5",
-        fullName: "Youssef Mansouri",
-        phone: "+216 27 345 678",
-        email: "youssef@example.com",
-        birthDate: "1982-11-03",
-        isActive: true,
-    },
-]
 
-const columns: ColumnDef<Patient>[] = [
-    {
+
+
+
+const features = tableFeatures({
+    columnFilteringFeature,
+    globalFilteringFeature,
+    rowSortingFeature,
+    rowPaginationFeature,
+
+    filteredRowModel: createFilteredRowModel(),
+    sortedRowModel: createSortedRowModel(),
+    paginatedRowModel: createPaginatedRowModel(),
+
+    filterFns: {
+        includesString: filterFn_includesString,
+        equals: filterFn_equals,
+    },
+})
+
+export function PatientsTable({
+    patients,
+    locale,
+}: {
+    patients: Patient[]
+    locale: string
+}) {
+    const [editingPatient, setEditingPatient] =
+        useState<Patient | null>(null)
+    const columns: ColumnDef<typeof features, Patient>[] = [{
         accessorKey: "fullName",
         header: ({ column }) => (
             <button
@@ -170,42 +158,41 @@ const columns: ColumnDef<Patient>[] = [
         id: "actions",
         header: "",
         enableGlobalFilter: false,
-        cell: () => (
+        cell: ({ row }) => (
             <DropdownMenu>
-                <DropdownMenuTrigger>
-                    <span className="inline-flex size-8 items-center justify-center rounded-md hover:bg-muted">
+                <DropdownMenuTrigger asChild>
+                    <button
+                        type="button"
+                        className="inline-flex size-8 items-center justify-center rounded-md hover:bg-muted"
+                    >
                         <MoreHorizontal className="size-4" />
                         <span className="sr-only">Open actions</span>
-                    </span>
+                    </button>
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View patient</DropdownMenuItem>
-                    <DropdownMenuItem>Edit patient</DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link
+                            href={`/${locale}/patients/${row.original.id}`}
+                        >
+                            View patient
+                        </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                        onClick={() => {
+                            setEditingPatient(row.original)
+                        }}
+                    >
+                        Edit patient
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         ),
     },
-]
-
-const features = tableFeatures({
-    columnFilteringFeature,
-    globalFilteringFeature,
-    rowSortingFeature,
-    rowPaginationFeature,
-
-    filteredRowModel: createFilteredRowModel(),
-    sortedRowModel: createSortedRowModel(),
-    paginatedRowModel: createPaginatedRowModel(),
-
-    filterFns: {
-        includesString: filterFn_includesString,
-        equals: filterFn_equals,
-    },
-})
-
-export function PatientsTable() {
+    ]
     const [sorting, setSorting] = useState<SortingState>([])
+
 
     const table = useTable(
         {
@@ -234,6 +221,18 @@ export function PatientsTable() {
 
     return (
         <div className="space-y-4">
+            {editingPatient && (
+                <EditPatientSheet
+                    locale={locale}
+                    patient={editingPatient}
+                    open={true}
+                    onOpenChange={(open) => {
+                        if (!open) {
+                            setEditingPatient(null)
+                        }
+                    }}
+                />
+            )}
             {/* Toolbar */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-sm">

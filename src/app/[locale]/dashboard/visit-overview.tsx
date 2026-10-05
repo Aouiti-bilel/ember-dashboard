@@ -1,22 +1,49 @@
-"use client"
+import { prisma } from "@/lib/prisma"
 
 type VisitOverviewProps = {
     doctorName: string
-    completed: number
-    planned: number
-    completedProgress?: number
-    plannedProgress?: number
 }
 
-export function VisitOverview({
+export async function VisitOverview({
     doctorName,
-    completed,
-    planned,
-    completedProgress = 0,
-    plannedProgress = 0,
 }: VisitOverviewProps) {
+    const now = new Date()
+
+    const startOfDay = new Date(now)
+    startOfDay.setHours(0, 0, 0, 0)
+
+    const endOfDay = new Date(now)
+    endOfDay.setHours(23, 59, 59, 999)
+
+    const appointments = await prisma.appointment.findMany({
+        where: {
+            date: {
+                gte: startOfDay,
+                lte: endOfDay,
+            },
+            status: {
+                not: "CANCELLED",
+            },
+        },
+        select: {
+            date: true,
+            status: true,
+        },
+    })
+
+    const total = appointments.length
+
+    const completed = appointments.filter(
+        (appointment) => appointment.status === "COMPLETED",
+    ).length
+
+    const remaining = Math.max(total - completed, 0)
+
+    const progress =
+        total > 0 ? Math.round((completed / total) * 100) : 0
+
     return (
-        <section className="relative h-full overflow-hidden rounded-lg border border-border bg-background">            {/* Decorative background */}
+        <section className="relative h-full overflow-hidden rounded-lg border border-border bg-background">
             <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -right-24 -top-32 size-[360px] rounded-full bg-primary/5"
@@ -34,54 +61,69 @@ export function VisitOverview({
 
             <div className="relative px-5 py-5">
                 <h1 className="text-2xl font-bold tracking-tight text-primary">
-                    Dr.{doctorName} !
+                    Dr. {doctorName}!
                 </h1>
 
                 <p className="mt-2 text-sm text-muted-foreground">
-                    Une vue densemble complète des visites prévues pour aujourdhui.
+                    Suivez l’avancement de votre journée en un coup d’œil.
                 </p>
 
                 <div className="mt-5 grid gap-8 lg:grid-cols-2">
                     <VisitKpi
-                        title="Visites Terminées"
-                        description="Ce KPI affiche le nombre de rendez-vous qui ont déjà eu lieu et sont considérés comme terminés pour aujourd'hui."
+                        title="Visites terminées"
+                        description="Les rendez-vous déjà effectués aujourd’hui."
                         value={completed}
-                        progress={completedProgress}
                     />
 
                     <VisitKpi
-                        title="Visites Prévisionnelles"
-                        description="Ce KPI concerne les rendez-vous prévus pour le reste de la journée."
-                        value={planned}
-                        progress={plannedProgress}
+                        title="Visites restantes"
+                        description="Les rendez-vous qu’il vous reste à recevoir aujourd’hui."
+                        value={remaining}
                     />
+                </div>
+
+                <div className="mt-6 border-t border-border pt-5">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-semibold">
+                                Progression de la journée
+                            </p>
+
+                            <p className="mt-1 text-xs text-muted-foreground">
+                                {total === 0
+                                    ? "Aucun rendez-vous prévu aujourd’hui."
+                                    : `${completed} visite${completed > 1 ? "s" : ""} sur ${total} terminée${completed > 1 ? "s" : ""}.`}
+                            </p>
+                        </div>
+
+                        <span className="text-sm font-semibold text-primary">
+                            {progress}%
+                        </span>
+                    </div>
+
+                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                        <div
+                            className="h-full rounded-full bg-primary transition-all"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
                 </div>
             </div>
         </section>
     )
 }
 
-
-
 type VisitKpiProps = {
     title: string
     description: string
     value: number
-    progress?: number
 }
 
-export function VisitKpi({
+function VisitKpi({
     title,
     description,
     value,
-    progress = 0,
 }: VisitKpiProps) {
-    const safeProgress = Math.min(Math.max(progress, 0), 100)
-
-    const radius = 80
-    const circumference = Math.PI * radius
-    const progressLength = (safeProgress / 100) * circumference
-
     return (
         <div>
             <h2 className="text-2xl font-normal tracking-tight text-primary">
@@ -94,44 +136,13 @@ export function VisitKpi({
 
             <div className="mt-4 border-t border-border" />
 
-            <div className="relative mx-auto mt-4 h-[125px] max-w-[220px] overflow-hidden">
-                <svg
-                    viewBox="0 0 200 110"
-                    className="absolute inset-x-0 top-0 h-auto w-full"
-                    aria-hidden="true"
-                >
-                    {/* Background arc */}
-                    <path
-                        d="M 20 100 A 80 80 0 0 1 180 100"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="16"
-                        strokeLinecap="butt"
-                        className="text-muted"
-                    />
+            <div className="mt-5">
+                <div className="text-4xl font-semibold tracking-tight text-primary">
+                    {value}
+                </div>
 
-                    {/* Progress arc */}
-                    {safeProgress > 0 && (
-                        <path
-                            d="M 20 100 A 80 80 0 0 1 180 100"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="16"
-                            strokeLinecap="butt"
-                            strokeDasharray={`${progressLength} ${circumference}`}
-                            className="text-primary"
-                        />
-                    )}
-                </svg>
-
-                <div className="absolute inset-x-0 bottom-2 text-center">
-                    <div className="text-base font-medium text-primary">
-                        {value}
-                    </div>
-
-                    <div className="mt-0.5 text-sm font-semibold text-primary">
-                        rendez-vous
-                    </div>
+                <div className="mt-1 text-sm text-muted-foreground">
+                    rendez-vous
                 </div>
             </div>
         </div>

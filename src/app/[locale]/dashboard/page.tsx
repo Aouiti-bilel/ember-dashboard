@@ -6,25 +6,59 @@ import { TodaysAppointments } from "./todays-appointments"
 import { TodaysSchedule } from "./todays-schedule"
 import { VisitOverview } from "./visit-overview"
 import { WeeklyAppointments } from "./weekly-appointments"
+import { prisma } from "@/lib/prisma"
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const startOfDay = new Date()
+  startOfDay.setHours(0, 0, 0, 0)
+
+  const endOfDay = new Date()
+  endOfDay.setHours(23, 59, 59, 999)
+
+  const todaysAppointments = await prisma.appointment.findMany({
+    where: {
+      date: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+      status: {
+        not: "CANCELLED",
+      },
+    },
+    include: {
+      patient: true,
+    },
+    orderBy: {
+      date: "asc",
+    },
+  })
+  const todaysAppointmentData = todaysAppointments.map(
+    (appointment) => ({
+      id: appointment.id,
+      time: new Intl.DateTimeFormat("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(appointment.date),
+      patient: appointment.patient.fullName,
+      type: appointment.type
+        .replace("_", " ")
+        .replace(/^\w/, (letter) => letter.toUpperCase()),
+      status: appointment.status
+        .replace("_", " ")
+        .replace(/^\w/, (letter) => letter.toUpperCase()),
+    }),
+  )
   return (
     <DashboardShell>
       <div className="space-y-6">
         {/* Main overview */}
         <section className="grid items-stretch gap-6 xl:grid-cols-5">
           <div className="min-w-0 xl:col-span-3">
-            <VisitOverview
-              doctorName="Doe"
-              completed={8}
-              planned={6}
-              completedProgress={80}
-              plannedProgress={60}
-            />
+            <VisitOverview doctorName="Doe" />
           </div>
 
           <div className="min-w-0 xl:col-span-2">
-            <TodaysAppointments />
+            <TodaysAppointments appointments={todaysAppointmentData} />
           </div>
         </section>
 

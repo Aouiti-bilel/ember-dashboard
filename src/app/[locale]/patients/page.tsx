@@ -1,7 +1,6 @@
-import { ArrowUpRight, Plus, Users } from "lucide-react"
+import { ArrowUpRight, Users } from "lucide-react"
 
 import { DashboardShell } from "@/components/layout/dashboard-shell"
-import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
@@ -9,8 +8,34 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { PatientsTable } from "./patients-table"
+import { prisma } from "@/lib/prisma"
+import { AddPatientSheet } from "./add-patient-sheet"
 
-export default function PatientsPage() {
+export default async function PatientsPage({
+    params,
+}: {
+    params: Promise<{ locale: string }>
+}) {
+    const { locale } = await params
+    const patients = await prisma.patient.findMany({
+        orderBy: {
+            fullName: "asc",
+        },
+    })
+    const patientRows = patients.map((patient) => ({
+        id: patient.id,
+        fullName: patient.fullName,
+        phone: patient.phone,
+        email: patient.email ?? undefined,
+        birthDate: patient.birthDate?.toISOString(),
+        isActive: patient.isActive,
+    }))
+    const totalPatients = patients.length
+    const activePatients = patients.filter(
+        (patient) => patient.isActive,
+    ).length
+    const inactivePatients = totalPatients - activePatients
+
     return (
         <DashboardShell>
             <div className="space-y-6">
@@ -35,10 +60,7 @@ export default function PatientsPage() {
                             </p>
                         </div>
 
-                        <Button className="shrink-0">
-                            <Plus className="mr-2 size-4" />
-                            Add patient
-                        </Button>
+                        <AddPatientSheet locale={locale} />
                     </div>
                 </section>
 
@@ -54,7 +76,7 @@ export default function PatientsPage() {
 
                             <div className="relative mt-3 flex items-end justify-between">
                                 <span className="text-3xl font-bold tracking-tight">
-                                    24
+                                    {totalPatients}
                                 </span>
 
                                 <span className="mb-1 flex items-center gap-1 text-xs font-semibold text-primary">
@@ -73,7 +95,7 @@ export default function PatientsPage() {
 
                             <div className="mt-3 flex items-end justify-between">
                                 <span className="text-3xl font-bold tracking-tight">
-                                    21
+                                    {activePatients}
                                 </span>
 
                                 <span className="mb-1 inline-flex items-center gap-1.5 text-xs font-medium">
@@ -92,7 +114,7 @@ export default function PatientsPage() {
 
                             <div className="mt-3 flex items-end justify-between">
                                 <span className="text-3xl font-bold tracking-tight">
-                                    3
+                                    {inactivePatients}
                                 </span>
 
                                 <span className="mb-1 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
@@ -116,7 +138,7 @@ export default function PatientsPage() {
                         </p>
                     </CardHeader>
                     <CardContent className="p-5">
-                        <PatientsTable />
+                        <PatientsTable patients={patientRows} locale={locale} />
                     </CardContent>
                 </Card>
             </div>
