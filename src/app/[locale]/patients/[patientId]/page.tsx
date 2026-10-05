@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { DashboardShell } from "@/components/layout/dashboard-shell"
+import { Dashboard } from "@/components/layout/dashboard-"
 import {
     Card,
     CardContent,
@@ -76,7 +76,7 @@ export default async function PatientPage({
         year: "numeric",
     }).format(patient.createdAt)
     return (
-        <DashboardShell>
+        <Dashboard>
             <div className="space-y-6">
                 {/* Back */}
                 <Button
@@ -307,6 +307,6 @@ export default async function PatientPage({
                     </CardContent>
                 </Card>
             </div>
-        </DashboardShell>
+        </Dashboard>
     )
 }

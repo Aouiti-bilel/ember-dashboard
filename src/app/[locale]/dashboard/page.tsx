@@ -1,4 +1,4 @@
-import { DashboardShell } from "@/components/layout/dashboard-shell"
+import { Dashboard } from "@/components/layout/dashboard"
 
 import { NewPatients } from "./new-patients"
 import { StatCard } from "./stat-card"
@@ -49,18 +49,20 @@ export default async function DashboardPage() {
     }),
   )
   return (
-    <DashboardShell>
+    <Dashboard>
       <div className="space-y-6">
         {/* Main overview */}
-        <section className="grid items-stretch gap-6 xl:grid-cols-5">
-          <div className="min-w-0 xl:col-span-3">
-            <VisitOverview doctorName="Doe" />
-          </div>
+   <section className="grid min-w-0 items-stretch gap-6 xl:grid-cols-5">
+    <div className="min-w-0 xl:col-span-3">
+        <VisitOverview doctorName="Doe" />
+    </div>
 
-          <div className="min-w-0 xl:col-span-2">
-            <TodaysAppointments appointments={todaysAppointmentData} />
-          </div>
-        </section>
+    <div className="min-w-0 xl:col-span-2">
+        <TodaysAppointments
+            appointments={todaysAppointmentData}
+        />
+    </div>
+</section>
 
         {/* Key statistics */}
         <section
@@ -105,6 +107,6 @@ export default async function DashboardPage() {
           <NewPatients />
         </section>
       </div>
-    </DashboardShell>
+    </Dashboard>
   )
 }

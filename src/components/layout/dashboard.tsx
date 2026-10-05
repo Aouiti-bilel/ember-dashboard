@@ -1,13 +1,13 @@
 import { Navbar } from "./navbar";
 import { Sidebar } from "./sidebar";
 
-interface DashboardShellProps {
+interface DashboardProps {
   children: React.ReactNode;
 }
 
-export function DashboardShell({
+export function Dashboard({
   children,
-}: DashboardShellProps) {
+}: DashboardProps) {
   return (
     <div className="min-h-screen bg-background">
       <div className="flex">
@@ -15,10 +15,10 @@ export function DashboardShell({
           <Sidebar />
         </div>
 
-        <div className="flex min-h-screen flex-1 flex-col">
+        <div className="flex min-h-screen min-w-0 flex-1 flex-col">
           <Navbar />
 
-          <main className="flex-1 p-6">
+          <main className="min-w-0 flex-1 p-6">
             {children}
           </main>
         </div>

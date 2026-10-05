@@ -1,6 +1,6 @@
 import { ArrowUpRight, Users } from "lucide-react"
 
-import { DashboardShell } from "@/components/layout/dashboard-shell"
+import { Dashboard } from "@/components/layout/dashboard"
 import {
     Card,
     CardContent,
@@ -37,7 +37,7 @@ export default async function PatientsPage({
     const inactivePatients = totalPatients - activePatients
 
     return (
-        <DashboardShell>
+        <Dashboard>
             <div className="space-y-6">
                 {/* Header */}
                 <section className="relative overflow-hidden rounded-xl border bg-primary/[0.04]">
@@ -142,6 +142,6 @@ export default async function PatientsPage({
                     </CardContent>
                 </Card>
             </div>
-        </DashboardShell>
+        </Dashboard>
     )
 }

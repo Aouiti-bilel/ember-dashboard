@@ -163,7 +163,7 @@ src/
 │   ├── ui/
 │   │
 │   ├── layout/
-│   │   ├── dashboard-shell.tsx
+│   │   ├── dashboard.tsx
 │   │   ├── sidebar.tsx
 │   │   └── navbar.tsx
 │   │
