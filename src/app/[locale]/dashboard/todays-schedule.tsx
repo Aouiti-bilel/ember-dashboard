@@ -5,6 +5,8 @@ import {
   CircleDot,
 } from "lucide-react"
 
+import { prisma } from "@/lib/prisma"
+
 import {
   Card,
   CardContent,
@@ -12,46 +14,69 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-const schedule = [
-  {
-    time: "09:00",
-    patient: "Sarah Johnson",
-    type: "Consultation",
-    status: "Completed",
-  },
-  {
-    time: "10:30",
-    patient: "Michael Chen",
-    type: "Follow-up",
-    status: "In Progress",
-  },
-  {
-    time: "14:00",
-    patient: "Emily Davis",
-    type: "Consultation",
-    status: "Scheduled",
-  },
-  {
-    time: "15:30",
-    patient: "James Wilson",
-    type: "Check-up",
-    status: "Scheduled",
-  },
-]
-
-function StatusIcon({ status }: { status: string }) {
-  if (status === "Completed") {
+function StatusIcon({
+  status,
+}: {
+  status: string
+}) {
+  if (status === "COMPLETED") {
     return <CheckCircle2 className="size-4 text-emerald-600" />
   }
 
-  if (status === "In Progress") {
+  if (status === "CONFIRMED") {
     return <CircleDot className="size-4 text-amber-500" />
   }
 
   return <Clock3 className="size-4 text-muted-foreground" />
 }
 
-export function TodaysSchedule() {
+function Status({
+  status,
+}: {
+  status: string
+}) {
+  const label = status
+    .replace("_", " ")
+    .replace(/^\w/, (letter) => letter.toUpperCase())
+
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <StatusIcon status={status} />
+      <span>{label}</span>
+    </div>
+  )
+}
+
+function formatAppointmentType(type: string) {
+  return type
+    .replace("_", " ")
+    .replace(/^\w/, (letter) => letter.toUpperCase())
+}
+
+export async function TodaysSchedule() {
+  const now = new Date()
+
+  const startOfDay = new Date(now)
+  startOfDay.setHours(0, 0, 0, 0)
+
+  const endOfDay = new Date(now)
+  endOfDay.setHours(23, 59, 59, 999)
+
+  const appointments = await prisma.appointment.findMany({
+    where: {
+      date: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+    },
+    include: {
+      patient: true,
+    },
+    orderBy: {
+      date: "asc",
+    },
+  })
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -69,46 +94,111 @@ export function TodaysSchedule() {
       </CardHeader>
 
       <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[600px] text-sm">
-            <thead>
-              <tr className="border-b text-left text-xs text-muted-foreground">
-                <th className="pb-3 font-medium">Time</th>
-                <th className="pb-3 font-medium">Patient</th>
-                <th className="pb-3 font-medium">Type</th>
-                <th className="pb-3 font-medium">Status</th>
-              </tr>
-            </thead>
+        {appointments.length === 0 ? (
+          <div className="flex min-h-32 flex-col items-center justify-center text-center">
+            <CalendarDays className="size-8 text-muted-foreground/50" />
 
-            <tbody>
-              {schedule.map((appointment) => (
-                <tr
-                  key={`${appointment.time}-${appointment.patient}`}
-                  className="border-b last:border-0"
+            <p className="mt-3 text-sm font-medium">
+              No appointments today
+            </p>
+
+            <p className="mt-1 text-xs text-muted-foreground">
+              Your schedule is clear for today.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Desktop */}
+            <div className="hidden md:block">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-xs text-muted-foreground">
+                    <th className="pb-3 font-medium">
+                      Time
+                    </th>
+
+                    <th className="pb-3 font-medium">
+                      Patient
+                    </th>
+
+                    <th className="pb-3 font-medium">
+                      Type
+                    </th>
+
+                    <th className="pb-3 font-medium">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {appointments.map((appointment) => (
+                    <tr
+                      key={appointment.id}
+                      className="border-b last:border-0"
+                    >
+                      <td className="py-3 font-medium">
+                        {new Intl.DateTimeFormat("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }).format(appointment.date)}
+                      </td>
+
+                      <td className="py-3">
+                        {appointment.patient.fullName}
+                      </td>
+
+                      <td className="py-3 text-muted-foreground">
+                        {formatAppointmentType(
+                          appointment.type,
+                        )}
+                      </td>
+
+                      <td className="py-3">
+                        <Status status={appointment.status} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile */}
+            <div className="divide-y md:hidden">
+              {appointments.map((appointment) => (
+                <div
+                  key={appointment.id}
+                  className="py-4 first:pt-1 last:pb-1"
                 >
-                  <td className="py-3 font-medium">
-                    {appointment.time}
-                  </td>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {appointment.patient.fullName}
+                      </p>
 
-                  <td className="py-3">
-                    {appointment.patient}
-                  </td>
-
-                  <td className="py-3 text-muted-foreground">
-                    {appointment.type}
-                  </td>
-
-                  <td className="py-3">
-                    <div className="flex items-center gap-2">
-                      <StatusIcon status={appointment.status} />
-                      <span>{appointment.status}</span>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {formatAppointmentType(
+                          appointment.type,
+                        )}
+                      </p>
                     </div>
-                  </td>
-                </tr>
+
+                    <span className="shrink-0 text-sm font-semibold">
+                      {new Intl.DateTimeFormat("en-GB", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }).format(appointment.date)}
+                    </span>
+                  </div>
+
+                  <div className="mt-3">
+                    <Status status={appointment.status} />
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   )

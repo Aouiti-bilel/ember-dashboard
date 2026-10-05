@@ -52,17 +52,17 @@ export default async function DashboardPage() {
     <Dashboard>
       <div className="space-y-6">
         {/* Main overview */}
-   <section className="grid min-w-0 items-stretch gap-6 xl:grid-cols-5">
-    <div className="min-w-0 xl:col-span-3">
-        <VisitOverview doctorName="Doe" />
-    </div>
+        <section className="grid min-w-0 items-stretch gap-6 xl:grid-cols-5">
+          <div className="min-w-0 xl:col-span-3">
+            <VisitOverview doctorName="Doe" />
+          </div>
 
-    <div className="min-w-0 xl:col-span-2">
-        <TodaysAppointments
-            appointments={todaysAppointmentData}
-        />
-    </div>
-</section>
+          <div className="min-w-0 xl:col-span-2">
+            <TodaysAppointments
+              appointments={todaysAppointmentData}
+            />
+          </div>
+        </section>
 
         {/* Key statistics */}
         <section
@@ -97,6 +97,16 @@ export default async function DashboardPage() {
             accent={4}
           />
         </section>
+        {/* Today's activity divider */}
+        <div className="flex items-center gap-4 py-1">
+          <div className="h-px flex-1 bg-border" />
+
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Today&apos;s activity
+          </span>
+
+          <div className="h-px flex-1 bg-border" />
+        </div>
 
         {/* Today's schedule */}
         <TodaysSchedule />
