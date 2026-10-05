@@ -1,94 +1,70 @@
-"use client"
+import { prisma } from "@/lib/prisma"
 
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts"
+import { NewPatientsChart } from "./new-patients-chart"
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+export async function NewPatients() {
+  const now = new Date()
 
-const data = [
-  { month: "Jan", patients: 12 },
-  { month: "Fév", patients: 18 },
-  { month: "Mar", patients: 15 },
-  { month: "Avr", patients: 22 },
-  { month: "Mai", patients: 19 },
-  { month: "Juin", patients: 27 },
-]
-
-export function NewPatients() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">
-          Nouveaux patients par mois
-        </CardTitle>
-
-        <p className="text-xs text-muted-foreground">
-          Évolution des nouveaux patients
-        </p>
-      </CardHeader>
-
-      <CardContent>
-        <div className="h-[280px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={data}
-              margin={{
-                top: 8,
-                right: 8,
-                left: -20,
-                bottom: 0,
-              }}
-            >
-              <CartesianGrid
-                vertical={false}
-                className="stroke-border"
-              />
-
-              <XAxis
-                dataKey="month"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12 }}
-              />
-
-              <YAxis
-                allowDecimals={false}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12 }}
-              />
-
-              <Tooltip />
-
-              <Line
-                type="monotone"
-                dataKey="patients"
-                name="Nouveaux patients"
-                stroke="var(--color-chart-2)"
-                strokeWidth={2}
-                dot={{
-                  r: 3,
-                }}
-                activeDot={{
-                  r: 5,
-                }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
+  const startDate = new Date(
+    now.getFullYear(),
+    now.getMonth() - 5,
+    1,
   )
+
+  const endDate = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    1,
+  )
+
+  const patients = await prisma.patient.findMany({
+    where: {
+      createdAt: {
+        gte: startDate,
+        lt: endDate,
+      },
+    },
+    select: {
+      createdAt: true,
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  })
+
+  const formatter = new Intl.DateTimeFormat("fr-FR", {
+    month: "short",
+  })
+
+  const months = Array.from({ length: 6 }, (_, index) => {
+    const date = new Date(
+      now.getFullYear(),
+      now.getMonth() - 5 + index,
+      1,
+    )
+
+    return {
+      year: date.getFullYear(),
+      month: date.getMonth(),
+      label: formatter
+        .format(date)
+        .replace(".", "")
+        .replace(/^\w/, (letter) => letter.toUpperCase()),
+      patients: 0,
+    }
+  })
+
+  for (const patient of patients) {
+    const month = months.find(
+      (item) =>
+        item.year === patient.createdAt.getFullYear() &&
+        item.month === patient.createdAt.getMonth(),
+    )
+
+    if (month) {
+      month.patients += 1
+    }
+  }
+
+  return <NewPatientsChart data={months} />
 }

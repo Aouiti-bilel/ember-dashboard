@@ -1,91 +1,58 @@
-"use client"
+import { prisma } from "@/lib/prisma"
 
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts"
+import { WeeklyAppointmentsChart } from "./weekly-appointments-chart"
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+export async function WeeklyAppointments() {
+  const now = new Date()
 
-const data = [
-  { day: "Lun", appointments: 4 },
-  { day: "Mar", appointments: 6 },
-  { day: "Mer", appointments: 5 },
-  { day: "Jeu", appointments: 8 },
-  { day: "Ven", appointments: 6 },
-  { day: "Sam", appointments: 3 },
-  { day: "Dim", appointments: 1 },
-]
+  const startOfWeek = new Date(now)
+  const day = startOfWeek.getDay()
 
-export function WeeklyAppointments() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">
-          Rendez-vous cette semaine
-        </CardTitle>
+  const diff = day === 0 ? -6 : 1 - day
 
-        <p className="text-xs text-muted-foreground">
-          Nombre de rendez-vous par jour
-        </p>
-      </CardHeader>
+  startOfWeek.setDate(startOfWeek.getDate() + diff)
+  startOfWeek.setHours(0, 0, 0, 0)
 
-      <CardContent>
-        <div className="h-[280px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={data}
-              margin={{
-                top: 8,
-                right: 8,
-                left: -20,
-                bottom: 0,
-              }}
-            >
-              <CartesianGrid
-                vertical={false}
-                className="stroke-border"
-              />
+  const endOfWeek = new Date(startOfWeek)
+  endOfWeek.setDate(endOfWeek.getDate() + 7)
 
-              <XAxis
-                dataKey="day"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12 }}
-              />
+  const appointments = await prisma.appointment.findMany({
+    where: {
+      date: {
+        gte: startOfWeek,
+        lt: endOfWeek,
+      },
+      status: {
+        not: "CANCELLED",
+      },
+    },
+    select: {
+      date: true,
+    },
+    orderBy: {
+      date: "asc",
+    },
+  })
 
-              <YAxis
-                allowDecimals={false}
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12 }}
-              />
+  const days = [
+    { key: 1, day: "Lun", appointments: 0 },
+    { key: 2, day: "Mar", appointments: 0 },
+    { key: 3, day: "Mer", appointments: 0 },
+    { key: 4, day: "Jeu", appointments: 0 },
+    { key: 5, day: "Ven", appointments: 0 },
+    { key: 6, day: "Sam", appointments: 0 },
+    { key: 0, day: "Dim", appointments: 0 },
+  ]
 
-              <Tooltip
-                cursor={{ fill: "hsl(var(--muted))" }}
-              />
+  for (const appointment of appointments) {
+    const day = appointment.date.getDay()
 
-              <Bar
-                dataKey="appointments"
-                name="Rendez-vous"
-                fill="var(--color-chart-1)"
-                radius={[4, 4, 0, 0]}
-                maxBarSize={42}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
-  )
+    const entry = days.find((item) => item.key === day)
+
+    if (entry) {
+      entry.appointments += 1
+    }
+  }
+
+  return <WeeklyAppointmentsChart data={days} />
 }
