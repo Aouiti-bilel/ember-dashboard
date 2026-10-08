@@ -231,3 +231,60 @@ export async function cancelAppointment(
     success: true,
   }
 }
+export async function createEmergencyVisit(
+  locale: string,
+  patientId: string,
+  notes?: string,
+) {
+  if (!patientId) {
+    return {
+      error: "Patient is required.",
+    }
+  }
+
+  const patient = await prisma.patient.findUnique({
+    where: {
+      id: patientId,
+    },
+  })
+
+  if (!patient) {
+    return {
+      error: "Patient not found.",
+    }
+  }
+
+  const visit = await prisma.emergencyVisit.create({
+    data: {
+      patientId,
+      notes: notes?.trim() || null,
+      status: "WAITING",
+    },
+  })
+
+  revalidatePath(`/${locale}/dashboard`)
+  revalidatePath(`/${locale}/patients/${patientId}`)
+
+  return {
+    success: true,
+    visitId: visit.id,
+  }
+}
+export async function updateEmergencyVisitStatus(
+  locale: string,
+  visitId: string,
+  status:
+    | "WAITING"
+    | "IN_CONSULTATION"
+    | "COMPLETED"
+    | "LEFT",
+) {
+  await prisma.emergencyVisit.update({
+    where: { id: visitId },
+    data: { status },
+  })
+
+  revalidatePath(`/${locale}/dashboard`)
+
+  return { success: true }
+}

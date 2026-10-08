@@ -9,6 +9,7 @@ import { DashboardPreferencesProvider } from "@/components/dashboard-preferences
 import { routing } from "@/i18n/routing"
 
 import "../globals.css"
+import { Toaster } from "@/components/ui/toast"
 
 export const metadata: Metadata = {
   title: "Ember Dashboard",
@@ -59,6 +60,8 @@ export default async function LocaleLayout({
             </ColorThemeProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
+        <Toaster />
+
       </body>
     </html>
   )

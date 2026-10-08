@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Dashboard } from "@/components/layout/dashboard-"
+import { Dashboard } from "@/components/layout/dashboard"
 import {
     Card,
     CardContent,

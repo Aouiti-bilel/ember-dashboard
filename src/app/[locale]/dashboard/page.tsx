@@ -7,8 +7,15 @@ import { TodaysSchedule } from "./todays-schedule"
 import { VisitOverview } from "./visit-overview"
 import { WeeklyAppointments } from "./weekly-appointments"
 import { prisma } from "@/lib/prisma"
+import { PatientArrived } from "./patient-arrived"
+import { WaitingRoom } from "./waiting-room"
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
   const startOfDay = new Date()
   startOfDay.setHours(0, 0, 0, 0)
 
@@ -48,16 +55,58 @@ export default async function DashboardPage() {
         .replace(/^\w/, (letter) => letter.toUpperCase()),
     }),
   )
+  const patients = await prisma.patient.findMany({
+    where: {
+      isActive: true,
+    },
+    select: {
+      id: true,
+      fullName: true,
+      phone: true,
+    },
+    orderBy: {
+      fullName: "asc",
+    },
+  })
+  const waitingRoomPatients = await prisma.emergencyVisit.findMany({
+    where: {
+      arrivedAt: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+      status: {
+        in: ["WAITING", "IN_CONSULTATION"],
+      },
+    },
+    include: {
+      patient: true,
+    },
+    orderBy: {
+      arrivedAt: "asc",
+    },
+  })
+  const waitingRoomData = waitingRoomPatients.map((visit) => ({
+    id: visit.id,
+    patientName: visit.patient.fullName,
+    arrivedAt: visit.arrivedAt,
+    status: visit.status,
+  }))
   return (
     <Dashboard>
       <div className="space-y-6">
         {/* Main overview */}
+        <div className="flex justify-end">
+          <PatientArrived patients={patients} locale={locale} />
+        </div>
         <section className="grid min-w-0 items-stretch gap-6 xl:grid-cols-5">
+
           <div className="min-w-0 xl:col-span-3">
             <VisitOverview doctorName="Doe" />
           </div>
-
-          <div className="min-w-0 xl:col-span-2">
+          <WaitingRoom
+            patients={waitingRoomData}
+            locale={locale}
+          />          <div className="min-w-0 xl:col-span-2">
             <TodaysAppointments
               appointments={todaysAppointmentData}
             />

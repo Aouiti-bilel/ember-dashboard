@@ -85,22 +85,44 @@ model Patient {
   birthDate DateTime?
   isActive  Boolean   @default(true)
 
-  appointments Appointment[]
+  appointments    Appointment[]
+  emergencyVisits EmergencyVisit[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Appointment {
-  id        String  @id @default(cuid())
+  id        String            @id @default(cuid())
   patientId String
-  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-
-  date   DateTime
-  type   AppointmentType   @default(CONSULTATION)
-  status AppointmentStatus @default(SCHEDULED)
-  notes  String?
+  patient   Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  date      DateTime
+  type      AppointmentType   @default(CONSULTATION)
+  status    AppointmentStatus @default(SCHEDULED)
+  notes     String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model EmergencyVisit {
+  id String @id @default(cuid())
+
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  arrivedAt DateTime             @default(now())
+  status    EmergencyVisitStatus @default(WAITING)
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EmergencyVisitStatus {
+  WAITING
+  IN_CONSULTATION
+  COMPLETED
+  LEFT
 }
